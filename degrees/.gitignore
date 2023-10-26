@@ -1,2 +1,4 @@
 # Hide data
 *.nosync
+/large
+/small
