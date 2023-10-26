@@ -4,3 +4,6 @@
 
 # folders that I don't want synced to the cloud or sent to github
 *.nosync
+
+# virtual environments
+*/venv
