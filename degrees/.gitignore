@@ -1,4 +1,7 @@
 # Hide data
-*.nosync
 /large
 /small
+
+# Apple
+*.nosync
+.DS_STORE
