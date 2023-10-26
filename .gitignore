@@ -1,2 +1,6 @@
+# Hidden apple files
 .DS_STORE
 */.DS_STORE
+
+# folders that I don't want synced to the cloud or sent to github
+*.nosync
