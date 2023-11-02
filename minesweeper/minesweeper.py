@@ -106,7 +106,7 @@ class Sentence():
         Returns the set of all cells in self.cells known to be mines.
         """
         
-        if len(self.cells) == count:
+        if len(self.cells) == self.count:
             return self.cells
         return set()
 
@@ -115,7 +115,7 @@ class Sentence():
         Returns the set of all cells in self.cells known to be safe.
         """
         
-        if count == 0:
+        if self.count == 0:
             return self.cells
         return set()
 
@@ -205,15 +205,15 @@ class MinesweeperAI():
         # add new sentence containing neighbors
         sentcells = set()
 
-        for i in range(3):
-            for j in range(3):
+        for i in range(cell[0] - 1, cell[0] + 2):
+            for j in range(cell[1] - 1, cell[1] + 2):
                 if -1 < i < self.height and -1 < j < self.width:
                     if (i, j) in self.mines:
                         count -= 1
                     elif (i, j) not in self.safes:
-                        sentcells.add(i, j)
+                        sentcells.add((i, j))
 
-        self.knowledge.append(newSentSentence(sentcells, count))
+        self.knowledge.append(Sentence(sentcells, count))
 
         # interpret new data
         change = True
@@ -223,25 +223,50 @@ class MinesweeperAI():
             # check if new cells can be marked safe or mine
             mines = set()
             safes = set()
-            for sentence in self.knowledge:
-                mines.union(sentence.known_mines())
-                safes.union(sentence.known_safes())
+            removals = []
+            for x in range(len(self.knowledge)):
+                newMines = self.knowledge[x].known_mines()
+                newSafes = self.knowledge[x].known_safes()
+                
+                if len(newMines) > 0:
+                    mines = mines.union(newMines)
+                    removals.append(x)
+                if len(newSafes) > 0:
+                    safes = safes.union(newSafes)
+                    removals.append(x)
+
+            for x in removals[::-1]:
+                self.knowledge.pop(x)
+
             
             if len(mines) != 0 or len(mines) != 0:
                 change = True
             
             for mine in mines:
+                self.mark_mine(mine)
                 for sentence in self.knowledge:
                     sentence.mark_mine(mine)
             
             for safe in safes:
+                self.mark_safe(safe)
                 for sentence in self.knowledge:
                     sentence.mark_safe(safe)
 
             # check if new sentences can be inferred via subsets
             for subset in self.knowledge:
-                
-
+                for sentence in self.knowledge:
+                    if (
+                        subset.cells.issubset(sentence.cells)
+                        and sentence.count - subset.count > 0
+                        and len(sentence.cells - subset.cells) > 0
+                    ):
+                        newSent = Sentence(
+                            sentence.cells - subset.cells,
+                            sentence.count - subset.count
+                        )
+                        if newSent not in self.knowledge:
+                            change = True
+                            self.knowledge.append(newSent)
 
     def make_safe_move(self):
         """
@@ -252,7 +277,13 @@ class MinesweeperAI():
         This function may use the knowledge in self.mines, self.safes
         and self.moves_made, but should not modify any of those values.
         """
-        raise NotImplementedError
+
+        print(self.safes)
+        
+        for safe in self.safes:
+            if safe not in self.moves_made:
+                return safe
+        return None
 
     def make_random_move(self):
         """
@@ -261,4 +292,17 @@ class MinesweeperAI():
             1) have not already been chosen, and
             2) are not known to be mines
         """
-        raise NotImplementedError
+
+        movesLeft = self.height * self.width
+        movesLeft -= len(self.mines) + len(self.moves_made)
+        if movesLeft == 0:
+            return None
+
+        while True:
+            move = (
+                random.randint(0, self.height-1),
+                random.randint(0, self.width-1)
+            )
+            if move not in self.moves_made and move not in self.mines:
+                return move
+
