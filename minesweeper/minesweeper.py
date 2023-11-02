@@ -221,11 +221,26 @@ class MinesweeperAI():
             change = False
 
             # check if new cells can be marked safe or mine
+            mines = set()
+            safes = set()
             for sentence in self.knowledge:
-                mines = sentence.known_mines
+                mines.union(sentence.known_mines())
+                safes.union(sentence.known_safes())
+            
+            if len(mines) != 0 or len(mines) != 0:
+                change = True
+            
+            for mine in mines:
+                for sentence in self.knowledge:
+                    sentence.mark_mine(mine)
+            
+            for safe in safes:
+                for sentence in self.knowledge:
+                    sentence.mark_safe(safe)
 
             # check if new sentences can be inferred via subsets
-
+            for subset in self.knowledge:
+                
 
 
     def make_safe_move(self):
