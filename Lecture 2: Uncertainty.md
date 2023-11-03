@@ -251,6 +251,7 @@ P(light)P(no|light)
 $$
 
 Or $P(light, no, delayed)$
+
 $$
 P(light)P(no|light)P(delayed|light, no)
 $$
