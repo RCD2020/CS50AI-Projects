@@ -295,3 +295,42 @@ $\alpha$ normalizes the result
 
 ### Sampling
 
+picking random values based on probability in our Bayesian Network to get quick approximations
+
+### Likelihood Weighting
+
+- Start by fixing the values for evidence variables
+- Sample the non-evidence variables using conditional probabilities in the Bayesian Network
+- Weight each sample by its likelihood: the probability of all of the evidence
+
+## Markov Assumption
+
+the assumption that the current state depends on only a finite fixed number of previous states
+
+### Markov Chain
+
+a sequence of random variables where the distribution of each variable follows the Markov assumption
+
+### Transition Model
+
+columns: Tomorrow ($\mathbf{X}_{t+1}$) \
+rows: Today ($\mathbf{X}_{t}$)
+
+|         | $sunny$ | $rainy$ |
+| ------- | ------- | ------- |
+| $sunny$ | 0.8     | 0.2     |
+| $rainy$ | 0.3     | 0.7     |
+
+### Hidden Markov Model
+
+a Markov model for a system with hidden states that generate some observed event
+
+### Sensor Model
+
+columns: Observation ($\mathbf{E}_{t}$) \
+rows: State ($\mathbf{X}_{t}$)
+
+|         | $umbrellas$ | $no\space umbrellas$ |
+| ------- | ----------- | -------------------- |
+| $sunny$ | 0.2         | 0.8                  |
+| $rainy$ | 0.9         | 0.1                  |
