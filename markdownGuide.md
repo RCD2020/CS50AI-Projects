@@ -18,3 +18,8 @@
 | $$ \langle \rangle $$ | \langle \rangle | Vector / Angle Brackets |
 | $$-$$           | \newline        | Adds a new line to represent multiple equations in one go |
 | $$-$$           | \space          | Adds a space in between symbols |
+
+## References
+
+[MarkdownForSymbolicLogic](http://davidagler.com/teaching/logic/handouts/supplemental_material/MarkdownForSymbolicLogic.html) \
+[Mathematics in R Markdown](https://rpruim.github.io/s341/S19/from-class/MathinRmd.html)
