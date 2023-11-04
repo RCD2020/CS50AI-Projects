@@ -57,7 +57,18 @@ def transition_model(corpus, page, damping_factor):
     linked to by `page`. With probability `1 - damping_factor`, choose
     a link at random chosen from all pages in the corpus.
     """
-    raise NotImplementedError
+    
+    # damping probabilities
+    weight = (1 - damping_factor) / len(corpus)
+    model = { name : weight for name in corpus.keys() }
+
+    # page probabilities
+    pages = corpus[page]
+    weight = damping_factor / len(pages)
+    for x in pages:
+        model[x] += weight
+
+    return model
 
 
 def sample_pagerank(corpus, damping_factor, n):
@@ -69,7 +80,28 @@ def sample_pagerank(corpus, damping_factor, n):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
-    raise NotImplementedError
+    
+    # somewhere to store counts
+    count = { name : 0 for name in corpus.keys() }
+
+    # first sample
+    page = list(corpus.keys())[random.randint(0, len(corpus)-1)]
+    count[page] += 1
+    
+    # run n times
+    for _ in range(n-1):
+        model = transition_model(corpus, page, damping_factor)
+        items = []
+        weights = []
+        for item, weight in model.items():
+            items.append(item)
+            weights.append(weight)
+
+        nextItem = random.choices(items, weights)[0]
+        count[nextItem] += 1
+        
+    # calculate weights and return
+    return { name : amount / n for name, amount in count.items() }
 
 
 def iterate_pagerank(corpus, damping_factor):
@@ -81,7 +113,53 @@ def iterate_pagerank(corpus, damping_factor):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
-    raise NotImplementedError
+    
+    # initialize ranks
+    weight = 1 / len(corpus)
+    ranks = { name : weight for name in corpus.keys() }
+
+    # calculate ranks until change is no longer greater than 0.001
+    change = 1
+    dampingScore = (1 - damping_factor) / len(corpus)
+    while change > 0.001:
+        change = 0
+        newRanks = {}
+        for page in corpus.keys():
+            # (1 - d) / N
+            newScore = dampingScore
+            
+            # i
+            linked = [
+                name for name in corpus.keys() if page in corpus[name]
+            ]
+
+            if len(linked) == 0:
+                linked = list(corpus.keys())
+
+            # Σ_i
+            sigma = 0
+            for i in linked:
+                # PR(i)
+                pr = ranks[i]
+
+                # NumLinks(i)
+                numlinks = len(corpus[i])
+
+                # PR(i) / NumLinks(i)
+                sigma += pr / numlinks
+            
+            # d * Σ_i
+            newScore += damping_factor * sigma
+            newRanks[page] = newScore
+
+            # calculate change
+            newChange = abs(ranks[page] - newScore)
+            if newChange > change:
+                change = newChange
+        
+        ranks = newRanks
+
+    return ranks
 
 
 if __name__ == "__main__":
