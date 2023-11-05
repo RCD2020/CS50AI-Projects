@@ -147,6 +147,8 @@ def iterate_pagerank(corpus, damping_factor):
 
                 # NumLinks(i)
                 numlinks = len(corpus[i])
+                if numlinks == 0:
+                    numlinks = len(corpus)
 
                 # PR(i) / NumLinks(i)
                 sigma += pr / numlinks
@@ -154,12 +156,19 @@ def iterate_pagerank(corpus, damping_factor):
             # d * Σ_i
             newScore += damping_factor * sigma
             newRanks[page] = newScore
+        
+        # normalize ranks
+        normal = sum(newRanks.values())
+        newRanks = {
+            page : (rank / normal) for page, rank in newRanks.items()
+        }
 
-            # calculate change
-            newChange = abs(ranks[page] - newScore)
+        # calculate change
+        for page in corpus:
+            newChange = abs(ranks[page] - newRanks[page])
             if newChange > change:
                 change = newChange
-        
+
         ranks = newRanks
 
     return ranks
