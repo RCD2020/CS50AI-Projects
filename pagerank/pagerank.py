@@ -57,6 +57,9 @@ def transition_model(corpus, page, damping_factor):
     linked to by `page`. With probability `1 - damping_factor`, choose
     a link at random chosen from all pages in the corpus.
     """
+
+    if len(corpus[page]) == 0:
+        return { name : 1 / len(corpus) for name in corpus.keys() }
     
     # damping probabilities
     weight = (1 - damping_factor) / len(corpus)
@@ -97,8 +100,8 @@ def sample_pagerank(corpus, damping_factor, n):
             items.append(item)
             weights.append(weight)
 
-        nextItem = random.choices(items, weights)[0]
-        count[nextItem] += 1
+        page = random.choices(items, weights)[0]
+        count[page] += 1
         
     # calculate weights and return
     return { name : amount / n for name, amount in count.items() }
